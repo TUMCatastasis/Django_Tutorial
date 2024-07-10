@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,20 +8,63 @@
     <title>Document</title>
     <!-- Minified version -->
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+
+    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css"/>
+    <style>
+        input[type=submit] {
+            margin-right: 8px;
+        }
+        #city_search {
+            margin-left: 8px;
+            margin-right: 0;
+        }
+
+        .autocomplete-input, .autocomplete-result-list {
+            color: black;
+        }
+    </style>
 </head>
 <body>
-<h1>{{ city }} </h1>
+<h1>{{ city }}, {{country}} </h1>
 <h2>{{ temp }} &#8451;</h2>
-<p>
+
+<h3>Geoloc: {{lat}}, {{lng}}</h3>
+
+<!--<div style="display: flex;"> -->
+    <form action="./search">
+        <div id="autocomplete" class="autocomplete" style="display: flex;">
+            <input class="autocomplete-input" name="city" required/>
+            <ul class="autocomplete-result-list"></ul>
+            <input id="city_search" type="submit" value="Search City" style="background: #32CD32">
+        </div>
+    </form>
+<!--</div> -->
+
 <div style="display: flex;">
     <form action="./discover">
-        <input type="submit" value="Check another location" style="background: #00CED1">
+        <input type="submit" value="Show Random City" style="background: #00CED1">
     </form>
-    &nbsp;
     <form action=".">
         <input type="submit" style="background: #dc3545" value="Home">
     </form>
 </div>
-</p>
+<script>
+    new Autocomplete('#autocomplete', {
+
+        search: input => {
+            const url = `/tum_meteo_tut/search_internal?city=${input}`
+            console.log(url)
+            return new Promise(resolve => {
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        resolve(data.data)
+                    })
+            })
+        }
+    })
+</script>
 </body>
 </html>
